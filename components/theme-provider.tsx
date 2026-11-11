@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Moon, Sun } from "lucide-react"
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 
 function ThemeProvider({
@@ -10,8 +11,8 @@ function ThemeProvider({
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme="dark"
+      enableSystem={false}
       disableTransitionOnChange
       {...props}
     >
@@ -68,4 +69,35 @@ function ThemeHotkey() {
   return null
 }
 
-export { ThemeProvider }
+const emptySubscribe = () => () => {}
+
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme()
+  // Hydration gate without setState-in-effect: server + first client render
+  // agree (dark default), then this flips to true after hydration.
+  const hydrated = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  )
+
+  const isDark = hydrated ? resolvedTheme !== "light" : true
+
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className="inline-flex size-9 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/60 dark:hover:bg-white/[0.07] dark:hover:text-white"
+    >
+      {isDark ? (
+        <Sun className="size-4" aria-hidden="true" />
+      ) : (
+        <Moon className="size-4" aria-hidden="true" />
+      )}
+    </button>
+  )
+}
+
+export { ThemeProvider, ThemeToggle }
