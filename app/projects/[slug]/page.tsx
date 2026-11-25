@@ -24,6 +24,7 @@ import { Reveal } from "@/components/Reveal"
 import { BrandIcon } from "@/components/icons"
 import { ActionLink } from "@/components/ui/action-link"
 import {
+  formatProjectOrder,
   getAdjacentProjects,
   getProjectBySlug,
   projects,
@@ -97,7 +98,7 @@ function ProjectLinkRow({ project }: { project: Project }) {
               {link.label}
             </span>
             <ArrowUpRight
-              className="size-3.5 text-white/25 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/60"
+              className="size-3.5 text-white/25 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white/60"
               aria-hidden="true"
             />
           </a>
@@ -145,7 +146,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           Home
         </Link>
         <span className="text-white/15">/</span>
-        <Link href="/projects" className="transition-colors hover:text-white/60">
+        <Link
+          href="/projects"
+          className="transition-colors hover:text-white/60"
+        >
           Projects
         </Link>
         <span className="text-white/15">/</span>
@@ -163,7 +167,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
               {project.category}
             </span>
             <span className="rounded-full border border-white/8 px-2.5 py-1 font-mono text-[9px] text-white/30">
-              {String(project.order).padStart(2, "0")} / 08
+              {String(project.order).padStart(2, "0")} /{" "}
+              {formatProjectOrder(projects.length)}
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/8 px-2.5 py-1 font-mono text-[9px] text-white/35">
               <span
@@ -218,6 +223,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         <div className="rounded-2xl border border-white/8 bg-[#09090c] p-2.5">
           <ProjectVisual
             project={project}
+            priority
             className="h-[230px] sm:h-[250px]"
           />
         </div>
@@ -244,7 +250,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           <Reveal>
             <section aria-labelledby="problem-heading">
               <div className="flex items-center gap-2">
-                <Target className="size-3.5 text-[#b7adff]" aria-hidden="true" />
+                <Target
+                  className="size-3.5 text-[#b7adff]"
+                  aria-hidden="true"
+                />
                 <h2
                   id="problem-heading"
                   className="font-mono text-[10px] tracking-[0.16em] text-white/40 uppercase"
@@ -261,7 +270,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           <Reveal className="mt-10">
             <section aria-labelledby="approach-heading">
               <div className="flex items-center gap-2">
-                <Layers className="size-3.5 text-[#b7adff]" aria-hidden="true" />
+                <Layers
+                  className="size-3.5 text-[#b7adff]"
+                  aria-hidden="true"
+                />
                 <h2
                   id="approach-heading"
                   className="font-mono text-[10px] tracking-[0.16em] text-white/40 uppercase"
@@ -290,7 +302,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           <Reveal className="mt-10">
             <section aria-labelledby="architecture-heading">
               <div className="flex items-center gap-2">
-                <Layers className="size-3.5 text-[#b7adff]" aria-hidden="true" />
+                <Layers
+                  className="size-3.5 text-[#b7adff]"
+                  aria-hidden="true"
+                />
                 <h2
                   id="architecture-heading"
                   className="font-mono text-[10px] tracking-[0.16em] text-white/40 uppercase"

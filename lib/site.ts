@@ -5,6 +5,8 @@ import type {
   SocialLink,
   TimelineEntry,
 } from "@/types/portfolio"
+import { projectCountByCategory } from "@/data/projects"
+import { numberToWord } from "@/lib/utils"
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
@@ -85,7 +87,7 @@ export const navItems: NavItem[] = [
   {
     label: "Projects",
     href: "/projects",
-    description: "Eight systems across web engineering and applied ML",
+    description: `${numberToWord(projectCountByCategory.total)} systems across web engineering and applied ML`,
   },
   {
     label: "Research",
@@ -106,9 +108,9 @@ export const navItems: NavItem[] = [
 
 export const stats: ProfileStat[] = [
   {
-    value: "08",
+    value: String(projectCountByCategory.total).padStart(2, "0"),
     label: "Systems shipped",
-    detail: "Six full-stack products, two applied ML systems",
+    detail: `${numberToWord(projectCountByCategory.web)} full-stack products, ${numberToWord(projectCountByCategory.ai).toLowerCase()} applied ML systems`,
   },
   {
     value: "3.86",

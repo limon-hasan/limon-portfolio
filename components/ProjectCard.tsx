@@ -49,9 +49,11 @@ function ProjectLinkChip({ link }: { link: ProjectLink }) {
 
 export function ProjectCard({
   project,
+  priority = false,
   className,
 }: {
   project: Project
+  priority?: boolean
   className?: string
 }) {
   const visibleTech = project.tech.slice(0, 3)
@@ -62,6 +64,7 @@ export function ProjectCard({
       <div className="relative overflow-hidden border-b border-white/8 bg-[#09090c] p-3">
         <ProjectVisual
           project={project}
+          priority={priority}
           className="h-[210px] transition-transform duration-500 ease-out group-hover:scale-[1.015] sm:h-[220px]"
         />
         <div className="pointer-events-none absolute inset-x-3 bottom-3 h-16 bg-gradient-to-t from-[#09090c]/60 to-transparent" />

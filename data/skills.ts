@@ -11,7 +11,8 @@ export const skills: Skill[] = [
     icon: "cpp",
     category: "Languages",
     level: "Core",
-    blurb: "Competitive programming, STL, fast I/O, algorithmic problem solving.",
+    blurb:
+      "Competitive programming, STL, fast I/O, algorithmic problem solving.",
     dock: true,
   },
   {
@@ -26,14 +27,16 @@ export const skills: Skill[] = [
     icon: "c",
     category: "Languages",
     level: "Core",
-    blurb: "Systems fundamentals, the memory model, and low-level problem solving.",
+    blurb:
+      "Systems fundamentals, the memory model, and low-level problem solving.",
   },
   {
     name: "TypeScript",
     icon: "typescript",
     category: "Languages",
     level: "Core",
-    blurb: "Strict application code, typed API contracts, discriminated unions.",
+    blurb:
+      "Strict application code, typed API contracts, discriminated unions.",
     dock: true,
   },
   {
@@ -215,32 +218,38 @@ export const techDock: Skill[] = techDockOrder
 export const skillGroups: SkillGroup[] = [
   {
     category: "Languages",
-    caption: "The base layer: typed application code, systems fundamentals, research scripts.",
+    caption:
+      "The base layer: typed application code, systems fundamentals, research scripts.",
     items: skills.filter((skill) => skill.category === "Languages"),
   },
   {
     category: "Frontend",
-    caption: "Interfaces that stay legible under real data and real network conditions.",
+    caption:
+      "Interfaces that stay legible under real data and real network conditions.",
     items: skills.filter((skill) => skill.category === "Frontend"),
   },
   {
     category: "Backend & APIs",
-    caption: "Service boundaries, validation, and contracts that both sides can trust.",
+    caption:
+      "Service boundaries, validation, and contracts that both sides can trust.",
     items: skills.filter((skill) => skill.category === "Backend & APIs"),
   },
   {
     category: "Auth & Security",
-    caption: "The auth boundary: sessions, tokens, and routes that never trust the client.",
+    caption:
+      "The auth boundary: sessions, tokens, and routes that never trust the client.",
     items: skills.filter((skill) => skill.category === "Auth & Security"),
   },
   {
     category: "AI / ML",
-    caption: "Applied research translated into trainable, evaluable, servable systems.",
+    caption:
+      "Applied research translated into trainable, evaluable, servable systems.",
     items: skills.filter((skill) => skill.category === "AI / ML"),
   },
   {
     category: "Tooling",
-    caption: "Reproducibility, version control, and environments that outlive a demo.",
+    caption:
+      "Reproducibility, version control, and environments that outlive a demo.",
     items: skills.filter((skill) => skill.category === "Tooling"),
   },
 ]

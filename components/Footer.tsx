@@ -28,7 +28,7 @@ export function Footer() {
               <Mail className="size-4" aria-hidden="true" />
               {profile.emails.primary}
               <ArrowUpRight
-                className="size-3.5 opacity-50 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                className="size-3.5 opacity-50 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 aria-hidden="true"
               />
             </a>

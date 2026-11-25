@@ -1,10 +1,5 @@
-import {
-  ArrowRight,
-  Download,
-  Mail,
-  MapPin,
-  Sparkles,
-} from "lucide-react"
+import { ArrowRight, Download, Mail, MapPin, Sparkles } from "lucide-react"
+import Image from "next/image"
 
 import { GlowCard } from "@/components/GlowCard"
 import { RotatingFocus } from "@/components/RotatingFocus"
@@ -15,7 +10,10 @@ import { techDock } from "@/data/skills"
 
 export function Hero() {
   return (
-    <section className="relative pt-12 sm:pt-16 lg:pt-20" aria-labelledby="hero-title">
+    <section
+      className="relative pt-12 sm:pt-16 lg:pt-20"
+      aria-labelledby="hero-title"
+    >
       <div className="grid gap-10 lg:grid-cols-[1.12fr_0.88fr] lg:items-start lg:gap-14">
         <div>
           <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-white/8 bg-white/[0.025] py-1 pr-3 pl-1.5 backdrop-blur-xl">
@@ -51,8 +49,8 @@ export function Hero() {
           </h1>
 
           <p className="pretty mt-6 max-w-xl text-[15px] leading-7 text-white/46">
-            I&apos;m Maksudul Hasan Limon, an undergraduate Computer Science
-            and Engineering (CSE) student at Northern University Bangladesh in
+            I&apos;m Maksudul Hasan Limon, an undergraduate Computer Science and
+            Engineering (CSE) student at Northern University Bangladesh in
             Dhaka. I build production-grade full-stack systems with Next.js,
             Node.js, and TypeScript, and solve algorithmic problems with 770+
             competitive programming solutions.
@@ -127,18 +125,20 @@ export function Hero() {
             <div className="p-5">
               <div className="flex items-start gap-4">
                 <div className="relative size-14 shrink-0 overflow-hidden rounded-2xl border border-[#8b7cff]/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]">
-                <img
-                  src="/projects/limon.jpg"
-                  alt="Maksudul Hasan Limon"
-                  className="w-full h-full object-cover rounded-xl"
-                />
-                <span className="absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full border border-white/10 bg-[#0c0c0f] dark-fixed">
-                  <Sparkles
-                    className="size-2.5 text-[#b7adff]"
-                    aria-hidden="true"
+                  <Image
+                    src="/projects/limon.jpg"
+                    alt="Maksudul Hasan Limon"
+                    fill
+                    sizes="56px"
+                    className="object-cover"
                   />
-                </span>
-              </div>
+                  <span className="dark-fixed absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full border border-white/10 bg-[#0c0c0f]">
+                    <Sparkles
+                      className="size-2.5 text-[#b7adff]"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </div>
                 <div className="min-w-0">
                   <div className="text-sm font-medium text-white/90">
                     {profile.shortName}
@@ -206,7 +206,7 @@ export function Hero() {
                 </div>
               </div>
 
-              <div className="mt-3 flex items-center gap-2 rounded-lg border border-white/7 bg-black/30 px-3 py-2.5 font-mono text-[10px] dark-fixed">
+              <div className="dark-fixed mt-3 flex items-center gap-2 rounded-lg border border-white/7 bg-zinc-950 px-3 py-2.5 font-mono text-[10px] dark:bg-black/30">
                 <span className="text-emerald-400/80">➜</span>
                 <span className="text-white/30">~/limon</span>
                 <span className="text-white/20">$</span>

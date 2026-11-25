@@ -4,14 +4,374 @@ import type { Project, ProjectCategoryFilter } from "@/types/portfolio"
  * Single source of truth for the portfolio catalog.
  *
  * Ordering is intentional and contractual:
- *   1–6  Web & Full-Stack Systems, in descending project sequence
- *   7–8  AI & Machine Learning, research-led systems
+ *   1–8   Web & Full-Stack Systems, in descending project sequence
+ *   9–10  AI & Machine Learning, research-led systems
  *
  * Consumers must preserve array order rather than re-sorting by title.
  */
 export const projects: Project[] = [
   {
     order: 1,
+    slug: "fixmate",
+    title: "FixMate",
+    category: "Web & Full-Stack Systems",
+    year: "2026",
+    role: "Full-stack engineering",
+    status: "Live",
+    featured: true,
+    accent: "#f472b6",
+    image: "/projects/fixmate.png",
+    tagline:
+      "A role-based device & appliance repair marketplace built around a Pay-After-Repair Stripe workflow.",
+    summary:
+      "FixMate is a multi-role repair marketplace for phones, laptops, ACs, and home appliances. Customers book verified technicians, follow a four-stage repair pipeline, and pay through Stripe only once a job is marked complete. A Next.js App Router client talks to an Express REST API over MongoDB, with Better-Auth sessions and custom JWT guards keeping customer, technician, and admin workspaces separate.",
+    problem:
+      "On-demand device and home appliance repair marketplaces often suffer from opaque pricing, zero visibility into repair progress, and upfront payment risk. Building a trustworthy multi-role platform required enforcing strict boundaries between Customers, Technicians, and Admins while ensuring customers only pay after verified completion.",
+    approach: [
+      "Split the product into a Next.js App Router + TypeScript client and a Node.js/Express REST API backed by MongoDB (fixmatedb), with four core collections — user, services, bookings, and payments — alongside Better-Auth session tables.",
+      "Modelled identity with Better-Auth (MongoDB adapter) plus custom Express JWT middlewares — verifyToken, verifyCustomer, verifyTechnician, and verifyAdmin — returning strict 401/403 responses and ownership checks.",
+      "Built role-specific protected workspaces: customers manage bookings, cancellations, Pay Now triggers, and payment history; technicians create services with ImgBB uploads, manage availability, handle job requests, and set final pricing; admins govern user roles, run the service approval queue, and read platform-wide bookings and revenue.",
+      "Pushed discovery into MongoDB query pipelines: search across title and category, category and service-mode filtering, and price_asc / price_desc / newest sorting, all synced with URL query parameters so state survives a reload.",
+      "Kept money server-authoritative: Stripe Checkout sessions are created from booking.finalAmount, webhook signatures are verified against the raw body, and payment records are written through atomic upserts.",
+    ],
+    tech: [
+      "Next.js App Router",
+      "TypeScript",
+      "Tailwind CSS",
+      "Node.js",
+      "Express.js",
+      "MongoDB",
+      "Better-Auth",
+      "JWT",
+      "Stripe Checkout & Webhooks",
+      "ImgBB",
+    ],
+    highlights: [
+      "Three-role RBAC with strict 401/403 middleware and ownership checks on every mutation.",
+      "A linear repair state machine — requested, accepted, in-progress, completed, paid — enforced server-side.",
+      "Pay-After-Repair Stripe Checkout whose charge is read from the verified final amount.",
+      "Service moderation that re-opens approval whenever an approved listing is edited.",
+      "Reload-safe search, filtering, and sorting backed by MongoDB query pipelines.",
+    ],
+    metrics: [
+      {
+        label: "Roles",
+        value: "3 surfaces",
+        hint: "Customer / Technician / Admin",
+      },
+      {
+        label: "Pipeline",
+        value: "5 states",
+        hint: "Requested → accepted → paid",
+      },
+      {
+        label: "Payments",
+        value: "Stripe",
+        hint: "Checkout + signed webhooks",
+      },
+      { label: "Status", value: "Live", hint: "Deployed on Vercel" },
+    ],
+    architecture: {
+      overview:
+        "A decoupled full-stack system. The App Router client renders public discovery and role dashboards, the Express API owns authorization, the repair state machine, and payment verification, and MongoDB stores users, services, bookings, and payment records. Stripe and ImgBB are the only external dependencies.",
+      nodes: [
+        {
+          id: "browser",
+          label: "Role dashboards",
+          detail: "Customer, technician, and admin surfaces",
+          layer: "client",
+        },
+        {
+          id: "next",
+          label: "Next.js App Router",
+          detail: "Server components, protected routes, URL state",
+          layer: "gateway",
+        },
+        {
+          id: "api",
+          label: "Express REST API",
+          detail: "Services, bookings, payments, users",
+          layer: "service",
+        },
+        {
+          id: "guards",
+          label: "JWT role guards",
+          detail: "verifyToken / Customer / Technician / Admin",
+          layer: "service",
+        },
+        {
+          id: "stripe",
+          label: "Stripe",
+          detail: "Checkout sessions + signed webhooks",
+          layer: "external",
+        },
+        {
+          id: "imgbb",
+          label: "ImgBB",
+          detail: "Technician service imagery",
+          layer: "external",
+        },
+        {
+          id: "mongo",
+          label: "MongoDB · fixmatedb",
+          detail: "user, services, bookings, payments",
+          layer: "data",
+        },
+      ],
+      flow: [
+        "A customer searches services; Express answers with MongoDB query pipelines driven by URL-synced query parameters.",
+        "A booking request is checked against duplicate active jobs before it enters the repair pipeline.",
+        "A technician accepts the job, works it through each stage, uploads imagery to ImgBB, and sets the final amount on completion.",
+        "Stripe Checkout is created server-side from booking.finalAmount once the job is completed.",
+        "The signed webhook and the client verification path upsert the same payment record atomically, keyed by stripeSessionId.",
+      ],
+    },
+    challenges: [
+      {
+        title: "Privilege escalation through role injection",
+        problem:
+          "Self-registration payloads can attempt to claim privileged roles. Trusting the client's role field would let any visitor create an admin account and reach the governance surface.",
+        solution:
+          "Role assignment runs through server-side Better-Auth sanitization hooks that coerce any unauthorized role payload to customer, and admins are blocked from demoting their own account.",
+        impact:
+          "Roles stay a server decision. Registration can never mint an admin, and the platform cannot be left without an administrator by accident.",
+      },
+      {
+        title: "Invalid job transitions and duplicate requests",
+        problem:
+          "Technicians could skip or reverse repair stages, and customers could open multiple active bookings for the same service, leaving dashboards and payments disagreeing about reality.",
+        solution:
+          "Enforced a strict linear server-side state machine (requested → accepted → in-progress → completed → paid) that rejects out-of-order transitions with 400 Bad Request, blocks duplicate active bookings per service and customer, and requires a positive finalAmount before completion.",
+        impact:
+          "Every booking record reflects a legal repair lifecycle, so technician actions, customer views, and payment state stay consistent.",
+      },
+      {
+        title: "Payment integrity under webhook retries",
+        problem:
+          "Client-side price tampering and duplicate Stripe deliveries could produce wrong charges or two payment rows for one checkout, especially when the webhook and the verify endpoint race.",
+        solution:
+          "Read charge amounts exclusively from booking.finalAmount in MongoDB, verified webhook signatures against the raw request body, and made both checkout.session.completed and /api/payments/verify write through atomic upserts with a unique index on stripeSessionId.",
+        impact:
+          "Each checkout resolves to exactly one payment record with a server-owned amount, even under retries or concurrent verification.",
+      },
+      {
+        title: "Moderation that survives edits",
+        problem:
+          "A technician could get a listing approved and then change its content, quietly shipping unreviewed services to the public catalog.",
+        solution:
+          "Editing an already-approved service automatically resets approvalStatus to pending so it returns to the admin review queue.",
+        impact:
+          "What customers browse is always content an admin approved in its current form.",
+      },
+    ],
+    links: [
+      {
+        kind: "live",
+        label: "Live platform",
+        href: "https://fullstack-final-project-device-repa-ebon.vercel.app",
+      },
+      {
+        kind: "frontend",
+        label: "Frontend repo",
+        href: "https://github.com/limon-hasan/fullstack-final-project-Device_Repair-platform-_PH_Assginment-frontend-client",
+      },
+      {
+        kind: "backend",
+        label: "Backend API",
+        href: "https://fullstack-final-project-device-repa.vercel.app",
+      },
+      {
+        kind: "backend",
+        label: "Backend repo",
+        href: "https://github.com/limon-hasan/fullstack-final-project-Device_Repair-platform-_PH_Assginment-backend-server",
+      },
+    ],
+    keywords: [
+      "repair",
+      "marketplace",
+      "stripe",
+      "pay after repair",
+      "rbac",
+      "next.js",
+      "express",
+      "mongodb",
+      "better-auth",
+      "jwt",
+      "device repair",
+      "appliance repair",
+    ],
+  },
+  {
+    order: 2,
+    slug: "hireloop",
+    title: "HireLoop",
+    category: "Web & Full-Stack Systems",
+    year: "2026",
+    role: "Full-stack engineering",
+    status: "Live",
+    featured: true,
+    accent: "#34d399",
+    image: "/projects/hireloop.png",
+    tagline:
+      "A multi-role full-stack job portal connecting recruiters and candidates with RBAC and Stripe payments.",
+    summary:
+      "HireLoop is a three-role job portal: candidates search and apply for roles, recruiters manage postings and applicant statuses, and admins moderate the platform. A Next.js App Router client and an Express/MongoDB API enforce ownership and role boundaries on every mutation, with Stripe Checkout verified server-side before any payment record is committed.",
+    problem:
+      "Recruitment platforms must balance fast, searchable job discovery for candidates with protected CRUD workflows for recruiters, administrative moderation, and trustworthy payment verification — without leaking cross-role capabilities or trusting client state.",
+    approach: [
+      "Decoupled a Next.js App Router + TypeScript frontend from a Node.js/Express + MongoDB RESTful backend.",
+      "Implemented three-role RBAC — Admins, Recruiters, and Users (candidates) — with dedicated dashboards, route guards, Better-Auth (MongoDB adapter) sessions, and JWT role verification middlewares returning 401/403.",
+      "Delivered end-to-end recruitment CRUD: job posting, editing, deletion, application submission, and status tracking, backed by server-side ownership enforcement and admin moderation.",
+      "Moved search, multi-criteria filtering, and sorting into MongoDB query pipelines with reload-safe URL state so discovery stays fast and shareable.",
+      "Integrated Stripe Checkout and verified payment completion server-side before writing transaction records to MongoDB.",
+    ],
+    tech: [
+      "Next.js App Router",
+      "TypeScript",
+      "Tailwind CSS",
+      "Node.js",
+      "Express.js",
+      "MongoDB",
+      "Better-Auth",
+      "JWT",
+      "Stripe API",
+    ],
+    highlights: [
+      "Three protected dashboards with route guards and JWT role middleware.",
+      "End-to-end hiring CRUD from posting through application status tracking.",
+      "Ownership checks on every recruiter and candidate mutation.",
+      "MongoDB-backed discovery with URL-persisted search, filters, and sort.",
+      "Server-verified Stripe payments with loading skeletons, confirmation modals, and error boundaries.",
+    ],
+    metrics: [
+      {
+        label: "Roles",
+        value: "3 surfaces",
+        hint: "Admin / Recruiter / Candidate",
+      },
+      {
+        label: "Search",
+        value: "MongoDB",
+        hint: "Filter + sort pipelines",
+      },
+      {
+        label: "Payments",
+        value: "Stripe",
+        hint: "Server-side verification",
+      },
+      { label: "Status", value: "Live", hint: "Deployed on Vercel" },
+    ],
+    architecture: {
+      overview:
+        "A separated full-stack architecture. The Next.js client owns presentation and protected routes, the Express API owns identity, ownership policy, and payment verification, and MongoDB stores jobs, applications, users, and payment records.",
+      nodes: [
+        {
+          id: "browser",
+          label: "Role dashboards",
+          detail: "Admin, recruiter, and candidate surfaces",
+          layer: "client",
+        },
+        {
+          id: "next",
+          label: "Next.js App Router",
+          detail: "Protected routes, server components, URL state",
+          layer: "gateway",
+        },
+        {
+          id: "api",
+          label: "Express REST API",
+          detail: "Jobs, applications, users, payments",
+          layer: "service",
+        },
+        {
+          id: "rbac",
+          label: "RBAC middleware",
+          detail: "JWT verification + role guards (401/403)",
+          layer: "service",
+        },
+        {
+          id: "stripe",
+          label: "Stripe Checkout",
+          detail: "Session creation + completion checks",
+          layer: "external",
+        },
+        {
+          id: "mongo",
+          label: "MongoDB",
+          detail: "Jobs, applications, payments, sessions",
+          layer: "data",
+        },
+      ],
+      flow: [
+        "A candidate searches roles; the API runs a MongoDB query using the filter and sort state encoded in the URL.",
+        "An application is created against the authenticated candidate identity, never a client-supplied one.",
+        "Recruiters mutate only their own postings and applicant statuses after the API re-checks ownership.",
+        "Admins keep platform-wide governance over content and roles.",
+        "Stripe Checkout completion is verified server-side before a transaction record is written to MongoDB.",
+      ],
+    },
+    challenges: [
+      {
+        title: "Cross-role data isolation",
+        problem:
+          "Three roles share one database. A missing check would let a recruiter touch another company's postings, a candidate read someone else's applications, or a user reach admin moderation.",
+        solution:
+          "Enforced strict server-side ownership checks: recruiters can only mutate their own job postings and applicant statuses, candidates only access their own applications, and admins retain platform-wide governance.",
+        impact:
+          "Authorization lives in the API, so the system stays correct even when a request bypasses the UI.",
+      },
+      {
+        title: "Server-side querying over client filtering",
+        problem:
+          "Fetching every job and filtering in the browser inflates payloads and makes filter state disappear on reload or share.",
+        solution:
+          "Offloaded search, filtering, and sorting to MongoDB query pipelines, and mirrored that state in the URL as the source of truth.",
+        impact:
+          "Discovery returns only the matching slice, and a filtered result set can be refreshed, bookmarked, or shared intact.",
+      },
+      {
+        title: "Reliable payment state",
+        problem:
+          "Redirect-based checkout can return before the payment is confirmed, and optimistic client state would mark an unpaid record as paid.",
+        solution:
+          "Verified Stripe Checkout completion server-side before committing transaction records to MongoDB, and supported that flow with loading skeletons, confirmation modals, and clean error boundaries.",
+        impact:
+          "Payment records reflect Stripe's confirmation rather than the browser's return path, and the UI stays honest while it waits.",
+      },
+    ],
+    links: [
+      {
+        kind: "live",
+        label: "Live platform",
+        href: "https://hireloop-client-phi-two.vercel.app/",
+      },
+      {
+        kind: "frontend",
+        label: "Frontend repo",
+        href: "https://github.com/limon-hasan/fullstack-final-project1-frontend--stripe--hireloop-Job-Portal-with-Stripe--client",
+      },
+      {
+        kind: "backend",
+        label: "Backend repo",
+        href: "https://github.com/limon-hasan/fullstack-final-project1-backend--stripe--hireloop-Job-Portal-with-Stripe--server",
+      },
+    ],
+    keywords: [
+      "job portal",
+      "recruitment",
+      "hiring",
+      "applications",
+      "rbac",
+      "stripe",
+      "next.js",
+      "express",
+      "mongodb",
+      "better-auth",
+      "jwt",
+    ],
+  },
+  {
+    order: 3,
     slug: "studiospace",
     title: "StudioSpace",
     category: "Web & Full-Stack Systems",
@@ -21,7 +381,8 @@ export const projects: Project[] = [
     featured: true,
     accent: "#8b7cff",
     image: "/projects/studiospace.png",
-    tagline: "A production-shaped studio booking platform with a hardened auth boundary.",
+    tagline:
+      "A production-shaped studio booking platform with a hardened auth boundary.",
     summary:
       "StudioSpace is a flagship booking platform for creative studios: browse availability, reserve time slots, and manage listings across a separate Next.js client and REST API. The engineering focus is identity: JWT access tokens verified against JWKS, server-side ownership checks, and a clean seam between the App Router client and the backend.",
     problem:
@@ -49,21 +410,63 @@ export const projects: Project[] = [
       "Server-first rendering with interactive booking surfaces.",
     ],
     metrics: [
-      { label: "Auth model", value: "JWT + JWKS", hint: "Asymmetric verification, cached key set" },
-      { label: "Surfaces", value: "2 repos", hint: "Next.js client + REST API" },
+      {
+        label: "Auth model",
+        value: "JWT + JWKS",
+        hint: "Asymmetric verification, cached key set",
+      },
+      {
+        label: "Surfaces",
+        value: "2 repos",
+        hint: "Next.js client + REST API",
+      },
       { label: "Status", value: "Live", hint: "Deployed on Vercel" },
-      { label: "Roles", value: "Owner / User", hint: "Ownership checks on mutations" },
+      {
+        label: "Roles",
+        value: "Owner / User",
+        hint: "Ownership checks on mutations",
+      },
     ],
     architecture: {
       overview:
         "A two-repository system. The App Router client renders public studio data on the server, then moves into a client boundary for booking state. Every privileged request carries an access token that the API verifies against JWKS before applying role and ownership policy.",
       nodes: [
-        { id: "browser", label: "Browser", detail: "Studio discovery, booking, dashboard", layer: "client" },
-        { id: "next", label: "Next.js App Router", detail: "Server components, route handlers, session UI", layer: "gateway" },
-        { id: "api", label: "REST API", detail: "Studios, slots, bookings, reviews", layer: "service" },
-        { id: "auth", label: "JWKS verifier", detail: "Signature, issuer, audience, expiry", layer: "service" },
-        { id: "policy", label: "Policy layer", detail: "Role + resource ownership checks", layer: "service" },
-        { id: "db", label: "Persistent store", detail: "Users, studios, slots, booking records", layer: "data" },
+        {
+          id: "browser",
+          label: "Browser",
+          detail: "Studio discovery, booking, dashboard",
+          layer: "client",
+        },
+        {
+          id: "next",
+          label: "Next.js App Router",
+          detail: "Server components, route handlers, session UI",
+          layer: "gateway",
+        },
+        {
+          id: "api",
+          label: "REST API",
+          detail: "Studios, slots, bookings, reviews",
+          layer: "service",
+        },
+        {
+          id: "auth",
+          label: "JWKS verifier",
+          detail: "Signature, issuer, audience, expiry",
+          layer: "service",
+        },
+        {
+          id: "policy",
+          label: "Policy layer",
+          detail: "Role + resource ownership checks",
+          layer: "service",
+        },
+        {
+          id: "db",
+          label: "Persistent store",
+          detail: "Users, studios, slots, booking records",
+          layer: "data",
+        },
       ],
       flow: [
         "Client requests a protected studio or booking resource.",
@@ -119,10 +522,19 @@ export const projects: Project[] = [
         href: "https://github.com/limon-hasan/fullstack-project1-studiospace-backend",
       },
     ],
-    keywords: ["booking", "jwks", "jwt", "auth", "next.js", "rest", "tailwind", "flagship"],
+    keywords: [
+      "booking",
+      "jwks",
+      "jwt",
+      "auth",
+      "next.js",
+      "rest",
+      "tailwind",
+      "flagship",
+    ],
   },
   {
-    order: 2,
+    order: 4,
     slug: "wanderlust",
     title: "Wanderlust",
     category: "Web & Full-Stack Systems",
@@ -132,7 +544,8 @@ export const projects: Project[] = [
     featured: false,
     accent: "#4fd1c5",
     image: "/projects/wanderlust.png",
-    tagline: "A full-stack travel platform connecting discovery, listings, and reservations.",
+    tagline:
+      "A full-stack travel platform connecting discovery, listings, and reservations.",
     summary:
       "Wanderlust is an end-to-end travel product with a Node.js/Express API and a MongoDB data layer. The work spans listing discovery, authenticated reservations, and the unglamorous parts of a real product: schema design, error normalization, and state that survives refreshes.",
     problem:
@@ -160,7 +573,11 @@ export const projects: Project[] = [
     ],
     metrics: [
       { label: "Architecture", value: "MERN", hint: "Express API + MongoDB" },
-      { label: "Focus", value: "Reservations", hint: "Account-scoped bookings" },
+      {
+        label: "Focus",
+        value: "Reservations",
+        hint: "Account-scoped bookings",
+      },
       { label: "Status", value: "Live", hint: "Public deployment" },
       { label: "Repos", value: "2", hint: "Frontend and backend" },
     ],
@@ -168,11 +585,36 @@ export const projects: Project[] = [
       overview:
         "A classic separated full-stack architecture. The client owns presentation and route state, the Express API owns business rules, and MongoDB stores normalized listing and reservation documents.",
       nodes: [
-        { id: "client", label: "Travel client", detail: "Discovery, filters, reservation flow", layer: "client" },
-        { id: "api", label: "Express API", detail: "Listings, users, reservations", layer: "service" },
-        { id: "validation", label: "Validation layer", detail: "Payload + availability checks", layer: "service" },
-        { id: "mongo", label: "MongoDB", detail: "Documents with indexed lookups", layer: "data" },
-        { id: "maps", label: "Media & location", detail: "Destination imagery and metadata", layer: "external" },
+        {
+          id: "client",
+          label: "Travel client",
+          detail: "Discovery, filters, reservation flow",
+          layer: "client",
+        },
+        {
+          id: "api",
+          label: "Express API",
+          detail: "Listings, users, reservations",
+          layer: "service",
+        },
+        {
+          id: "validation",
+          label: "Validation layer",
+          detail: "Payload + availability checks",
+          layer: "service",
+        },
+        {
+          id: "mongo",
+          label: "MongoDB",
+          detail: "Documents with indexed lookups",
+          layer: "data",
+        },
+        {
+          id: "maps",
+          label: "Media & location",
+          detail: "Destination imagery and metadata",
+          layer: "external",
+        },
       ],
       flow: [
         "The client requests a filtered listing collection.",
@@ -227,10 +669,17 @@ export const projects: Project[] = [
         href: "https://github.com/limon-hasan/Wanderlust-FullStack-Demo-project-backend",
       },
     ],
-    keywords: ["travel", "express", "mongodb", "mern", "reservations", "full-stack"],
+    keywords: [
+      "travel",
+      "express",
+      "mongodb",
+      "mern",
+      "reservations",
+      "full-stack",
+    ],
   },
   {
-    order: 3,
+    order: 5,
     slug: "bazar-dor",
     title: "Bazar-Dor",
     category: "Web & Full-Stack Systems",
@@ -240,7 +689,8 @@ export const projects: Project[] = [
     featured: false,
     accent: "#f6c177",
     image: "/projects/bazar-dor.png",
-    tagline: "Real-time commodity pricing and valuation for everyday market decisions.",
+    tagline:
+      "Real-time commodity pricing and valuation for everyday market decisions.",
     summary:
       "Bazar-Dor turns scattered commodity prices into a readable market dashboard with authentication, price tracking, and valuation views. The design problem is density: show enough data to be useful without turning a daily price check into a spreadsheet.",
     problem:
@@ -267,7 +717,11 @@ export const projects: Project[] = [
       "Mobile-first data density with a wider desktop comparison layout.",
     ],
     metrics: [
-      { label: "Domain", value: "Market data", hint: "Commodity price tracking" },
+      {
+        label: "Domain",
+        value: "Market data",
+        hint: "Commodity price tracking",
+      },
       { label: "Model", value: "Time series", hint: "Observations over time" },
       { label: "Auth", value: "Account-scoped", hint: "Private tracked views" },
       { label: "Status", value: "Live", hint: "Public deployment" },
@@ -276,11 +730,36 @@ export const projects: Project[] = [
       overview:
         "A React client authenticated against a market data source. Price observations are normalized into a time-based model, then transformed into the summaries used by the dashboard.",
       nodes: [
-        { id: "client", label: "React dashboard", detail: "Price cards, comparison, valuation", layer: "client" },
-        { id: "auth", label: "Auth boundary", detail: "Protected personal views", layer: "service" },
-        { id: "source", label: "Market data", detail: "Commodity observations", layer: "external" },
-        { id: "derived", label: "Derived analytics", detail: "Deltas, comparisons, valuation", layer: "service" },
-        { id: "state", label: "Client state", detail: "Tracked items and filters", layer: "client" },
+        {
+          id: "client",
+          label: "React dashboard",
+          detail: "Price cards, comparison, valuation",
+          layer: "client",
+        },
+        {
+          id: "auth",
+          label: "Auth boundary",
+          detail: "Protected personal views",
+          layer: "service",
+        },
+        {
+          id: "source",
+          label: "Market data",
+          detail: "Commodity observations",
+          layer: "external",
+        },
+        {
+          id: "derived",
+          label: "Derived analytics",
+          detail: "Deltas, comparisons, valuation",
+          layer: "service",
+        },
+        {
+          id: "state",
+          label: "Client state",
+          detail: "Tracked items and filters",
+          layer: "client",
+        },
       ],
       flow: [
         "An authenticated user opens the market dashboard.",
@@ -330,10 +809,18 @@ export const projects: Project[] = [
         href: "https://github.com/limon-hasan/Frontend-project-with-Authentication-Bazar-Dor-",
       },
     ],
-    keywords: ["react", "market", "commodity", "pricing", "auth", "dashboard", "analytics"],
+    keywords: [
+      "react",
+      "market",
+      "commodity",
+      "pricing",
+      "auth",
+      "dashboard",
+      "analytics",
+    ],
   },
   {
-    order: 4,
+    order: 6,
     slug: "bangla-news-24",
     title: "Bangla News 24",
     category: "Web & Full-Stack Systems",
@@ -343,7 +830,8 @@ export const projects: Project[] = [
     featured: false,
     accent: "#f97362",
     image: "/projects/bangla-news-24.png",
-    tagline: "A high-traffic Bengali news portal built around typography and category speed.",
+    tagline:
+      "A high-traffic Bengali news portal built around typography and category speed.",
     summary:
       "Bangla News 24 is a category-driven news experience for Bengali readers. The engineering center is the reading system: Bengali Unicode typography, editorial hierarchy, and a responsive aggregation grid that stays fast as story volume grows.",
     problem:
@@ -369,8 +857,16 @@ export const projects: Project[] = [
       "Responsive grid tuned for reading measure.",
     ],
     metrics: [
-      { label: "Audience", value: "Bengali", hint: "Unicode-first reading experience" },
-      { label: "Model", value: "Category grid", hint: "Lead + standard + compact" },
+      {
+        label: "Audience",
+        value: "Bengali",
+        hint: "Unicode-first reading experience",
+      },
+      {
+        label: "Model",
+        value: "Category grid",
+        hint: "Lead + standard + compact",
+      },
       { label: "Rendering", value: "Server-first", hint: "Next.js App Router" },
       { label: "Status", value: "Live", hint: "Public deployment" },
     ],
@@ -378,11 +874,36 @@ export const projects: Project[] = [
       overview:
         "A server-rendered Next.js portal with category routes and reusable story card densities. The data flow is intentionally simple: normalize stories, aggregate by category, render the grid.",
       nodes: [
-        { id: "reader", label: "Reader", detail: "Category browsing and story reading", layer: "client" },
-        { id: "next", label: "Next.js portal", detail: "Category routes and server rendering", layer: "gateway" },
-        { id: "aggregation", label: "Story aggregation", detail: "Normalize and group by category", layer: "service" },
-        { id: "content", label: "Editorial content", detail: "Story metadata and media", layer: "data" },
-        { id: "type", label: "Type system", detail: "Bengali scale and card variants", layer: "client" },
+        {
+          id: "reader",
+          label: "Reader",
+          detail: "Category browsing and story reading",
+          layer: "client",
+        },
+        {
+          id: "next",
+          label: "Next.js portal",
+          detail: "Category routes and server rendering",
+          layer: "gateway",
+        },
+        {
+          id: "aggregation",
+          label: "Story aggregation",
+          detail: "Normalize and group by category",
+          layer: "service",
+        },
+        {
+          id: "content",
+          label: "Editorial content",
+          detail: "Story metadata and media",
+          layer: "data",
+        },
+        {
+          id: "type",
+          label: "Type system",
+          detail: "Bengali scale and card variants",
+          layer: "client",
+        },
       ],
       flow: [
         "The reader opens a category route.",
@@ -427,10 +948,17 @@ export const projects: Project[] = [
         href: "https://bangla-news-24-ecru.vercel.app",
       },
     ],
-    keywords: ["next.js", "bengali", "news", "typography", "media", "responsive"],
+    keywords: [
+      "next.js",
+      "bengali",
+      "news",
+      "typography",
+      "media",
+      "responsive",
+    ],
   },
   {
-    order: 5,
+    order: 7,
     slug: "fitlog",
     title: "FitLog",
     category: "Web & Full-Stack Systems",
@@ -440,7 +968,8 @@ export const projects: Project[] = [
     featured: false,
     accent: "#a3e635",
     image: "/projects/fitlog.png",
-    tagline: "A dark, brutalist workout tracker built around routine consistency.",
+    tagline:
+      "A dark, brutalist workout tracker built around routine consistency.",
     summary:
       "FitLog is a fitness and routine tracker with an interactive exercise library, structured routines, and progress logging. The interface takes a dark brutalist direction: high-contrast type, visible structure, and no decorative softness where a number should be.",
     problem:
@@ -466,20 +995,53 @@ export const projects: Project[] = [
       "Progress visualization oriented around consistency.",
     ],
     metrics: [
-      { label: "Design", value: "Brutalist", hint: "High-contrast dark interface" },
+      {
+        label: "Design",
+        value: "Brutalist",
+        hint: "High-contrast dark interface",
+      },
       { label: "Core loop", value: "Log", hint: "Exercise → sets → progress" },
-      { label: "Library", value: "Filterable", hint: "Movement-based discovery" },
+      {
+        label: "Library",
+        value: "Filterable",
+        hint: "Movement-based discovery",
+      },
       { label: "Status", value: "Live", hint: "Public deployment" },
     ],
     architecture: {
       overview:
         "A Next.js client with a local-first logging interaction. Exercise definitions are separated from routine composition, and progress views derive from the log rather than storing duplicate summaries.",
       nodes: [
-        { id: "client", label: "Next.js client", detail: "Routine, logging, progress views", layer: "client" },
-        { id: "library", label: "Exercise library", detail: "Movement metadata and filters", layer: "service" },
-        { id: "routine", label: "Routine composer", detail: "Ordered exercise collections", layer: "service" },
-        { id: "logs", label: "Workout logs", detail: "Sets, reps, load, notes", layer: "data" },
-        { id: "progress", label: "Progress views", detail: "Derived trends and consistency", layer: "client" },
+        {
+          id: "client",
+          label: "Next.js client",
+          detail: "Routine, logging, progress views",
+          layer: "client",
+        },
+        {
+          id: "library",
+          label: "Exercise library",
+          detail: "Movement metadata and filters",
+          layer: "service",
+        },
+        {
+          id: "routine",
+          label: "Routine composer",
+          detail: "Ordered exercise collections",
+          layer: "service",
+        },
+        {
+          id: "logs",
+          label: "Workout logs",
+          detail: "Sets, reps, load, notes",
+          layer: "data",
+        },
+        {
+          id: "progress",
+          label: "Progress views",
+          detail: "Derived trends and consistency",
+          layer: "client",
+        },
       ],
       flow: [
         "The user selects or composes a routine from the exercise library.",
@@ -495,8 +1057,7 @@ export const projects: Project[] = [
           "A tracker is abandoned when logging a set takes too many taps. Adding analytics before fixing the loop is backwards.",
         solution:
           "Compressed the primary path into a single surface with sensible defaults, then kept advanced metadata optional.",
-        impact:
-          "The product supports the habit first and the analysis second.",
+        impact: "The product supports the habit first and the analysis second.",
       },
       {
         title: "Exercise data needs structure",
@@ -504,8 +1065,7 @@ export const projects: Project[] = [
           "Free-text exercise names make filtering, progress comparison, and routine reuse unreliable.",
         solution:
           "Separated exercise definitions from logged sets so the same movement keeps a stable identity across routines.",
-        impact:
-          "Trends stay comparable even when routine names change.",
+        impact: "Trends stay comparable even when routine names change.",
       },
       {
         title: "Brutalism without usability debt",
@@ -524,10 +1084,17 @@ export const projects: Project[] = [
         href: "https://nextjs-assignment-project-programmi.vercel.app",
       },
     ],
-    keywords: ["next.js", "fitness", "tracker", "brutalist", "exercise", "progress"],
+    keywords: [
+      "next.js",
+      "fitness",
+      "tracker",
+      "brutalist",
+      "exercise",
+      "progress",
+    ],
   },
   {
-    order: 6,
+    order: 8,
     slug: "devstack",
     title: "DevStack",
     category: "Web & Full-Stack Systems",
@@ -537,7 +1104,8 @@ export const projects: Project[] = [
     featured: false,
     accent: "#60a5fa",
     image: "/projects/devstack.png",
-    tagline: "A comparison engine for frameworks, databases, and architecture trade-offs.",
+    tagline:
+      "A comparison engine for frameworks, databases, and architecture trade-offs.",
     summary:
       "DevStack is an interactive tech-stack comparison tool. Instead of another listicle, it presents frameworks and databases as a structured decision matrix: compare capabilities side by side, filter by constraints, and read the trade-off rather than the marketing copy.",
     problem:
@@ -563,20 +1131,57 @@ export const projects: Project[] = [
       "Shareable comparison state.",
     ],
     metrics: [
-      { label: "Model", value: "Decision matrix", hint: "Shared dimensions per option" },
-      { label: "UX", value: "Side-by-side", hint: "Compare without context switching" },
-      { label: "Filters", value: "Constraint-led", hint: "Ecosystem, data model, weight" },
+      {
+        label: "Model",
+        value: "Decision matrix",
+        hint: "Shared dimensions per option",
+      },
+      {
+        label: "UX",
+        value: "Side-by-side",
+        hint: "Compare without context switching",
+      },
+      {
+        label: "Filters",
+        value: "Constraint-led",
+        hint: "Ecosystem, data model, weight",
+      },
       { label: "Status", value: "Live", hint: "Public deployment" },
     ],
     architecture: {
       overview:
         "A React application backed by a normalized local data model. Comparison state is encoded in the URL, and the matrix renders from a shared schema so every option is evaluated on identical dimensions.",
       nodes: [
-        { id: "client", label: "React client", detail: "Comparison workspace", layer: "client" },
-        { id: "schema", label: "Comparison schema", detail: "Shared dimensions per option", layer: "service" },
-        { id: "catalog", label: "Tech catalog", detail: "Framework and database records", layer: "data" },
-        { id: "url", label: "URL state", detail: "Shareable comparison selection", layer: "gateway" },
-        { id: "filters", label: "Filter engine", detail: "Constraint-based narrowing", layer: "service" },
+        {
+          id: "client",
+          label: "React client",
+          detail: "Comparison workspace",
+          layer: "client",
+        },
+        {
+          id: "schema",
+          label: "Comparison schema",
+          detail: "Shared dimensions per option",
+          layer: "service",
+        },
+        {
+          id: "catalog",
+          label: "Tech catalog",
+          detail: "Framework and database records",
+          layer: "data",
+        },
+        {
+          id: "url",
+          label: "URL state",
+          detail: "Shareable comparison selection",
+          layer: "gateway",
+        },
+        {
+          id: "filters",
+          label: "Filter engine",
+          detail: "Constraint-based narrowing",
+          layer: "service",
+        },
       ],
       flow: [
         "The user selects two or more technologies.",
@@ -621,10 +1226,17 @@ export const projects: Project[] = [
         href: "https://react-final-project-ph-final-assign.vercel.app",
       },
     ],
-    keywords: ["react", "comparison", "frameworks", "databases", "architecture", "matrix"],
+    keywords: [
+      "react",
+      "comparison",
+      "frameworks",
+      "databases",
+      "architecture",
+      "matrix",
+    ],
   },
   {
-    order: 7,
+    order: 9,
     slug: "bengali-fake-news-detection",
     title: "Bengali Fake News Detection",
     category: "AI & Machine Learning",
@@ -633,7 +1245,8 @@ export const projects: Project[] = [
     status: "Case study",
     featured: false,
     accent: "#22d3ee",
-    tagline: "Misinformation detection for a low-resource language, from classical baselines to transformers.",
+    tagline:
+      "Misinformation detection for a low-resource language, from classical baselines to transformers.",
     summary:
       "An offline Python NLP pipeline that classifies Bengali news as credible or misleading. The work compares TF-IDF with classical learners against a fine-tuned DistilBERT model and treats class imbalance as a first-class problem with SMOTE resampling.",
     problem:
@@ -661,21 +1274,67 @@ export const projects: Project[] = [
       "Fully offline Python pipeline: preprocessing, training, and evaluation.",
     ],
     metrics: [
-      { label: "Models", value: "2 families", hint: "TF-IDF + RF vs DistilBERT" },
-      { label: "Imbalance", value: "SMOTE", hint: "Resampled training distribution" },
-      { label: "Language", value: "Bengali", hint: "Low-resource NLP pipeline" },
-      { label: "Runtime", value: "Offline Python", hint: "No server endpoints" },
+      {
+        label: "Models",
+        value: "2 families",
+        hint: "TF-IDF + RF vs DistilBERT",
+      },
+      {
+        label: "Imbalance",
+        value: "SMOTE",
+        hint: "Resampled training distribution",
+      },
+      {
+        label: "Language",
+        value: "Bengali",
+        hint: "Low-resource NLP pipeline",
+      },
+      {
+        label: "Runtime",
+        value: "Offline Python",
+        hint: "No server endpoints",
+      },
     ],
     architecture: {
       overview:
         "An offline training and evaluation pipeline. Raw Bengali text is normalized, vectorized or tokenized depending on the model family, and compared against class-aware metrics entirely offline.",
       nodes: [
-        { id: "corpus", label: "Bengali corpus", detail: "Labelled news text", layer: "data" },
-        { id: "preprocess", label: "Preprocessing", detail: "Normalize, clean, script-aware splits", layer: "service" },
-        { id: "classical", label: "TF-IDF + RF", detail: "Classical baseline", layer: "intelligence" },
-        { id: "transformer", label: "DistilBERT", detail: "Contextual fine-tune", layer: "intelligence" },
-        { id: "eval", label: "Evaluation", detail: "Macro-F1, precision, recall", layer: "service" },
-        { id: "offline", label: "Offline pipeline", detail: "Training + evaluation scripts", layer: "gateway" },
+        {
+          id: "corpus",
+          label: "Bengali corpus",
+          detail: "Labelled news text",
+          layer: "data",
+        },
+        {
+          id: "preprocess",
+          label: "Preprocessing",
+          detail: "Normalize, clean, script-aware splits",
+          layer: "service",
+        },
+        {
+          id: "classical",
+          label: "TF-IDF + RF",
+          detail: "Classical baseline",
+          layer: "intelligence",
+        },
+        {
+          id: "transformer",
+          label: "DistilBERT",
+          detail: "Contextual fine-tune",
+          layer: "intelligence",
+        },
+        {
+          id: "eval",
+          label: "Evaluation",
+          detail: "Macro-F1, precision, recall",
+          layer: "service",
+        },
+        {
+          id: "offline",
+          label: "Offline pipeline",
+          detail: "Training + evaluation scripts",
+          layer: "gateway",
+        },
       ],
       flow: [
         "Normalize and clean the Bengali text without destroying script-level signals.",
@@ -722,10 +1381,18 @@ export const projects: Project[] = [
       evaluation:
         "Macro-F1 as the primary selection metric, supported by per-class precision, recall, and confusion-matrix analysis rather than accuracy alone.",
     },
-    keywords: ["nlp", "bengali", "fake news", "distilbert", "smote", "tf-idf", "machine learning"],
+    keywords: [
+      "nlp",
+      "bengali",
+      "fake news",
+      "distilbert",
+      "smote",
+      "tf-idf",
+      "machine learning",
+    ],
   },
   {
-    order: 8,
+    order: 10,
     slug: "federated-learning-satellite",
     title: "Personalized Federated Learning on Satellite Vision",
     category: "AI & Machine Learning",
@@ -734,7 +1401,8 @@ export const projects: Project[] = [
     status: "Research",
     featured: true,
     accent: "#a78bfa",
-    tagline: "Distributed ship detection across non-IID satellite clients, without centralizing imagery.",
+    tagline:
+      "Distributed ship detection across non-IID satellite clients, without centralizing imagery.",
     summary:
       "An undergraduate thesis investigating personalized federated learning for satellite ship detection. YOLOv8 detectors train on edge clients with heterogeneous, non-IID imagery distributions and aggregate through Flower. The research question is not whether federation works in a clean simulation, but whether it survives realistic client skew across HRSC2016, ShipRSImageNet, Airbus Ship Detection, and DOTA.",
     problem:
@@ -747,7 +1415,13 @@ export const projects: Project[] = [
       "Compared global aggregation against personalized strategies that retain client-specific adaptation.",
       "Evaluated with detection metrics and per-client performance rather than a single global average.",
     ],
-    tech: ["Flower FL", "Python", "YOLOv8", "Computer Vision", "Distributed Training"],
+    tech: [
+      "Flower FL",
+      "Python",
+      "YOLOv8",
+      "Computer Vision",
+      "Distributed Training",
+    ],
     highlights: [
       "Cross-silo federated learning for satellite object detection.",
       "YOLOv8 training on four heterogeneous detection datasets.",
@@ -755,21 +1429,63 @@ export const projects: Project[] = [
       "Personalization as a response to client heterogeneity.",
     ],
     metrics: [
-      { label: "Datasets", value: "4 domains", hint: "HRSC2016, ShipRSImageNet, Airbus, DOTA" },
-      { label: "Orchestration", value: "Flower", hint: "Client sampling + aggregation" },
+      {
+        label: "Datasets",
+        value: "4 domains",
+        hint: "HRSC2016, ShipRSImageNet, Airbus, DOTA",
+      },
+      {
+        label: "Orchestration",
+        value: "Flower",
+        hint: "Client sampling + aggregation",
+      },
       { label: "Detector", value: "YOLOv8", hint: "Local detector training" },
-      { label: "Constraint", value: "Non-IID", hint: "Heterogeneous client partitions" },
+      {
+        label: "Constraint",
+        value: "Non-IID",
+        hint: "Heterogeneous client partitions",
+      },
     ],
     architecture: {
       overview:
         "A federated training loop across simulated satellite imagery providers. Flower coordinates rounds, each client trains a YOLOv8 detector on local data, and the server aggregates weights. Personalization keeps the global model from erasing client-specific signal.",
       nodes: [
-        { id: "server", label: "Flower server", detail: "Round scheduling, sampling, aggregation", layer: "service" },
-        { id: "client-a", label: "Client A", detail: "HRSC2016 partition + YOLOv8", layer: "intelligence" },
-        { id: "client-b", label: "Client B", detail: "ShipRSImageNet partition + YOLOv8", layer: "intelligence" },
-        { id: "client-c", label: "Client C", detail: "Airbus partition + YOLOv8", layer: "intelligence" },
-        { id: "client-d", label: "Client D", detail: "DOTA partition + YOLOv8", layer: "intelligence" },
-        { id: "eval", label: "Evaluation", detail: "Per-client detection metrics", layer: "data" },
+        {
+          id: "server",
+          label: "Flower server",
+          detail: "Round scheduling, sampling, aggregation",
+          layer: "service",
+        },
+        {
+          id: "client-a",
+          label: "Client A",
+          detail: "HRSC2016 partition + YOLOv8",
+          layer: "intelligence",
+        },
+        {
+          id: "client-b",
+          label: "Client B",
+          detail: "ShipRSImageNet partition + YOLOv8",
+          layer: "intelligence",
+        },
+        {
+          id: "client-c",
+          label: "Client C",
+          detail: "Airbus partition + YOLOv8",
+          layer: "intelligence",
+        },
+        {
+          id: "client-d",
+          label: "Client D",
+          detail: "DOTA partition + YOLOv8",
+          layer: "intelligence",
+        },
+        {
+          id: "eval",
+          label: "Evaluation",
+          detail: "Per-client detection metrics",
+          layer: "data",
+        },
       ],
       flow: [
         "The server samples a subset of clients for the round.",
@@ -818,12 +1534,7 @@ export const projects: Project[] = [
       },
     ],
     links: [],
-    datasets: [
-      "HRSC2016",
-      "ShipRSImageNet",
-      "Airbus Ship Detection",
-      "DOTA",
-    ],
+    datasets: ["HRSC2016", "ShipRSImageNet", "Airbus Ship Detection", "DOTA"],
     research: {
       question:
         "How can personalized federated learning preserve per-client ship-detection quality when satellite imagery is non-IID and clients are operationally heterogeneous?",
@@ -845,46 +1556,6 @@ export const projects: Project[] = [
     ],
   },
 ]
-
-export const projectCategories: {
-  id: ProjectCategoryFilter
-  label: string
-  description: string
-}[] = [
-  {
-    id: "all",
-    label: "All Projects",
-    description: "The complete catalog, ordered by category and sequence.",
-  },
-  {
-    id: "web",
-    label: "Web & Full-Stack Systems",
-    description: "Six production-shaped web products, ordered 01 → 06.",
-  },
-  {
-    id: "ai",
-    label: "AI & Machine Learning",
-    description: "Two applied research systems, ordered 07 → 08.",
-  },
-]
-
-export const categoryMeta = {
-  all: {
-    label: "All Projects",
-    short: "All",
-    description: "The complete catalog, ordered by category and sequence.",
-  },
-  web: {
-    label: "Web & Full-Stack Systems",
-    short: "Web",
-    description: "Production-shaped web products, ordered 01 → 06.",
-  },
-  ai: {
-    label: "AI & Machine Learning",
-    short: "AI / ML",
-    description: "Applied research systems, ordered 07 → 08.",
-  },
-} as const
 
 export function getProjectBySlug(slug: string): Project | undefined {
   return projects.find((project) => project.slug === slug)
@@ -927,8 +1598,75 @@ export function getAdjacentProjects(slug: string): {
 export const webProjects = getProjectsByCategory("web")
 export const aiProjects = getProjectsByCategory("ai")
 
+export const featuredWebProjects = webProjects.filter(
+  (project) => project.featured
+)
+
 export const projectCountByCategory = {
   web: webProjects.length,
   ai: aiProjects.length,
   total: projects.length,
+} as const
+
+/** Zero-padded project sequence, e.g. 1 -> "01". */
+export function formatProjectOrder(order: number): string {
+  return String(order).padStart(2, "0")
+}
+
+/**
+ * Sequence bounds for a category, derived from the catalog rather than
+ * hardcoded, e.g. "01 — 08".
+ */
+export function getCategoryOrderRange(
+  category: Exclude<ProjectCategoryFilter, "all">
+): string {
+  const scoped = category === "web" ? webProjects : aiProjects
+  const first = scoped[0]?.order
+  const last = scoped[scoped.length - 1]?.order
+
+  if (first === undefined || last === undefined) {
+    return "00 — 00"
+  }
+
+  return `${formatProjectOrder(first)} — ${formatProjectOrder(last)}`
+}
+
+export const projectCategories: {
+  id: ProjectCategoryFilter
+  label: string
+  description: string
+}[] = [
+  {
+    id: "all",
+    label: "All Projects",
+    description: "The complete catalog, ordered by category and sequence.",
+  },
+  {
+    id: "web",
+    label: "Web & Full-Stack Systems",
+    description: `${projectCountByCategory.web} production-shaped web products, ordered ${getCategoryOrderRange("web")}.`,
+  },
+  {
+    id: "ai",
+    label: "AI & Machine Learning",
+    description: `${projectCountByCategory.ai} applied research systems, ordered ${getCategoryOrderRange("ai")}.`,
+  },
+]
+
+export const categoryMeta = {
+  all: {
+    label: "All Projects",
+    short: "All",
+    description: "The complete catalog, ordered by category and sequence.",
+  },
+  web: {
+    label: "Web & Full-Stack Systems",
+    short: "Web",
+    description: `${projectCountByCategory.web} production-shaped web products, ordered ${getCategoryOrderRange("web")}.`,
+  },
+  ai: {
+    label: "AI & Machine Learning",
+    short: "AI / ML",
+    description: `${projectCountByCategory.ai} applied research systems, ordered ${getCategoryOrderRange("ai")}.`,
+  },
 } as const

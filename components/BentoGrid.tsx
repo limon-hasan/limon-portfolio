@@ -16,7 +16,14 @@ import { Reveal } from "@/components/Reveal"
 import { SolvingMetrics } from "@/components/SolvingMetrics"
 import { TechDock } from "@/components/TechDock"
 import { ActionLink } from "@/components/ui/action-link"
-import { aiProjects, getProjectBySlug } from "@/data/projects"
+import {
+  aiProjects,
+  featuredWebProjects,
+  formatProjectOrder,
+  getProjectBySlug,
+  projectCountByCategory,
+} from "@/data/projects"
+import { cn } from "@/lib/utils"
 import { profile } from "@/lib/site"
 
 const flagship = getProjectBySlug("studiospace") ?? aiProjects[0]
@@ -34,8 +41,36 @@ export function BentoGrid() {
               Flagship
             </span>
             <span className="font-mono text-[10px] tracking-wider text-white/25">
-              01 / 08
+              {formatProjectOrder(flagship.order)} /{" "}
+              {formatProjectOrder(projectCountByCategory.total)}
             </span>
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            <span className="font-mono text-[8px] tracking-[0.14em] text-white/25 uppercase">
+              Selected
+            </span>
+            {featuredWebProjects.map((project) => {
+              const isFlagship = project.slug === flagship.slug
+
+              return (
+                <Link
+                  key={project.slug}
+                  href={`/projects/${project.slug}`}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[9px] font-medium transition-colors",
+                    isFlagship
+                      ? "border-[#8b7cff]/30 bg-[#5b4df5]/10 text-[#c9c3ff]"
+                      : "border-white/8 bg-white/[0.03] text-white/45 hover:border-white/20 hover:text-white/80"
+                  )}
+                >
+                  <span className="font-mono text-[8px] opacity-60">
+                    {formatProjectOrder(project.order)}
+                  </span>
+                  {project.title}
+                </Link>
+              )
+            })}
           </div>
 
           <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
@@ -191,7 +226,7 @@ export function BentoGrid() {
                         {project.title}
                       </span>
                       <ArrowUpRight
-                        className="size-3 shrink-0 text-white/25 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/60"
+                        className="size-3 shrink-0 text-white/25 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white/60"
                         aria-hidden="true"
                       />
                     </span>

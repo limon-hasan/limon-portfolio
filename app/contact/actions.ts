@@ -79,7 +79,9 @@ async function deliverEmail(input: {
   email: string
   subject: string
   message: string
-}): Promise<{ ok: true } | { ok: false; reason: "not-configured" | "provider" }> {
+}): Promise<
+  { ok: true } | { ok: false; reason: "not-configured" | "provider" }
+> {
   const apiKey = process.env.RESEND_API_KEY
 
   if (!apiKey) {
@@ -97,8 +99,7 @@ async function deliverEmail(input: {
 
   const to = process.env.CONTACT_TO_EMAIL ?? profile.emails.primary
   const from =
-    process.env.CONTACT_FROM_EMAIL ??
-    "Portfolio <onboarding@resend.dev>"
+    process.env.CONTACT_FROM_EMAIL ?? "Portfolio <onboarding@resend.dev>"
 
   const text = [
     `New portfolio message`,

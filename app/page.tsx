@@ -17,7 +17,8 @@ import { Hero } from "@/components/Hero"
 import { Reveal } from "@/components/Reveal"
 import { SectionHeading } from "@/components/SectionHeading"
 import { ActionLink } from "@/components/ui/action-link"
-import { projects } from "@/data/projects"
+import { projects, projectCountByCategory } from "@/data/projects"
+import { numberToWord } from "@/lib/utils"
 import { principles, profile } from "@/lib/site"
 
 const principleIcons: Record<string, LucideIcon> = {
@@ -37,7 +38,8 @@ export default function HomePage() {
           eyebrow="The ecosystem"
           title={
             <span id="ecosystem-title">
-              Eight systems. One engineering operating system.
+              {numberToWord(projectCountByCategory.total)} systems. One
+              engineering operating system.
             </span>
           }
           description="A flagship booking platform, a competitive programming engine, applied research, and the tools underneath. Built as separate products, designed with the same standards."
@@ -61,7 +63,9 @@ export default function HomePage() {
         <SectionHeading
           eyebrow="Project index"
           title={
-            <span id="project-index-title">The catalog, in strict sequence.</span>
+            <span id="project-index-title">
+              The catalog, in strict sequence.
+            </span>
           }
           description="Web and full-stack systems first, then research and machine learning. Each row opens a full engineering case study."
         />
@@ -125,7 +129,7 @@ export default function HomePage() {
                     </span>
                   </span>
                   <ArrowUpRight
-                    className="size-3.5 justify-self-end text-white/20 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/60"
+                    className="size-3.5 justify-self-end text-white/20 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white/60"
                     aria-hidden="true"
                   />
                 </Link>
@@ -138,9 +142,7 @@ export default function HomePage() {
       <section className="mt-24" aria-labelledby="principles-title">
         <SectionHeading
           eyebrow="Engineering principles"
-          title={
-            <span id="principles-title">How the work gets made.</span>
-          }
+          title={<span id="principles-title">How the work gets made.</span>}
           description="Four constraints that show up in every project: explicit boundaries, measured behavior, interfaces that respect attention, and research that survives its own assumptions."
           action={
             <ActionLink href="/about" variant="ghost" size="sm">

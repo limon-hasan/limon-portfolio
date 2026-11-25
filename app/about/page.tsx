@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 import { GlowCard } from "@/components/GlowCard"
 import { Reveal } from "@/components/Reveal"
@@ -19,13 +20,7 @@ import { TechIcon } from "@/components/TechIcon"
 import { BrandIcon } from "@/components/icons"
 import { ActionLink } from "@/components/ui/action-link"
 import { competitiveProfiles, skillGroups } from "@/data/skills"
-import {
-  principles,
-  profile,
-  socials,
-  stats,
-  timeline,
-} from "@/lib/site"
+import { principles, profile, socials, stats, timeline } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "About",
@@ -69,8 +64,8 @@ export default function AboutPage() {
             <span className="text-gradient">Systems person by habit.</span>
           </h1>
           <p className="pretty mt-5 max-w-xl text-[14.5px] leading-7 text-white/45">
-            I&apos;m Maksudul Hasan Limon, an undergraduate Computer Science
-            and Engineering (CSE) student at Northern University Bangladesh in
+            I&apos;m Maksudul Hasan Limon, an undergraduate Computer Science and
+            Engineering (CSE) student at Northern University Bangladesh in
             Dhaka. I build production-grade full-stack systems with Next.js,
             Node.js, and TypeScript, and solve algorithmic problems with 770+
             competitive programming solutions.
@@ -109,11 +104,13 @@ export default function AboutPage() {
 
         <GlowCard className="p-5">
           <div className="flex items-start gap-4">
-            <div className="size-16 shrink-0 overflow-hidden rounded-2xl border border-[#8b7cff]/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]">
-              <img
+            <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl border border-[#8b7cff]/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]">
+              <Image
                 src="/projects/limon.jpg"
                 alt="Maksudul Hasan Limon"
-                className="w-full h-full object-cover rounded-xl"
+                fill
+                sizes="64px"
+                className="object-cover"
               />
             </div>
             <div>
@@ -171,7 +168,9 @@ export default function AboutPage() {
         <SectionHeading
           eyebrow="The journey"
           title={
-            <span id="journey-heading">A path built on problems, not titles.</span>
+            <span id="journey-heading">
+              A path built on problems, not titles.
+            </span>
           }
           description="Formal training gave me the vocabulary. Projects and research gave me the habits: define the constraint, build the smallest honest system, measure it, then improve the seam that actually failed."
         />
@@ -222,7 +221,10 @@ export default function AboutPage() {
           <Reveal delay={0.1}>
             <GlowCard className="h-full p-5">
               <div className="flex items-center gap-2">
-                <Sparkles className="size-3.5 text-[#b7adff]" aria-hidden="true" />
+                <Sparkles
+                  className="size-3.5 text-[#b7adff]"
+                  aria-hidden="true"
+                />
                 <span className="font-mono text-[9px] tracking-[0.16em] text-white/28 uppercase">
                   What I optimize for
                 </span>
@@ -277,7 +279,9 @@ export default function AboutPage() {
         <SectionHeading
           eyebrow="Engineering principles"
           title={
-            <span id="principles-heading">The constraints I bring to a team.</span>
+            <span id="principles-heading">
+              The constraints I bring to a team.
+            </span>
           }
           description="These are not slogans. They show up as decisions in the case studies: where validation lives, what gets measured, and what the interface refuses to hide."
         />
@@ -309,7 +313,9 @@ export default function AboutPage() {
         <SectionHeading
           eyebrow="Technical range"
           title={
-            <span id="skills-heading">The stack, grouped by responsibility.</span>
+            <span id="skills-heading">
+              The stack, grouped by responsibility.
+            </span>
           }
           description="Not a wall of logos. Each group maps to a layer of the systems I build, from algorithmic foundations to model training and deployment."
         />

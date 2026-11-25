@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  AlertCircle,
-  CheckCircle2,
-  Loader2,
-  Send,
-} from "lucide-react"
+import { AlertCircle, CheckCircle2, Loader2, Send } from "lucide-react"
 import { useActionState, useEffect, useRef } from "react"
 
 import { submitContact } from "@/app/contact/actions"
@@ -20,19 +15,16 @@ const initialState: ContactFormState = {
 const fieldClasses =
   "w-full rounded-lg border border-white/10 bg-black/25 px-3.5 py-2.5 text-sm text-white placeholder:text-white/22 transition-colors focus:border-[#8b7cff]/50 focus:bg-black/40 focus:outline-none focus:ring-2 focus:ring-[#5b4df5]/15 aria-invalid:border-red-400/50 aria-invalid:ring-red-400/10"
 
-function FieldError({
-  id,
-  messages,
-}: {
-  id: string
-  messages?: string[]
-}) {
+function FieldError({ id, messages }: { id: string; messages?: string[] }) {
   if (!messages || messages.length === 0) {
     return null
   }
 
   return (
-    <p id={id} className="mt-1.5 flex items-center gap-1 text-[11px] text-red-300/80">
+    <p
+      id={id}
+      className="mt-1.5 flex items-center gap-1 text-[11px] text-red-300/80"
+    >
       <AlertCircle className="size-3 shrink-0" aria-hidden="true" />
       {messages[0]}
     </p>
@@ -207,7 +199,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-white px-5 text-[13px] font-medium text-[#08080a] transition-colors hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-zinc-950 px-5 text-[13px] font-medium text-[#fafafa] transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-[#08080a] dark:hover:bg-white/90"
         >
           {pending ? (
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />

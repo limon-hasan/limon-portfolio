@@ -62,8 +62,8 @@ export default function ContactPage() {
         </h1>
         <p className="pretty mt-4 text-[14.5px] leading-7 text-white/45">
           Roles, research collaborations, or a specific system that needs a
-          careful pair of hands. Include enough context for a real reply — I read
-          every serious message.
+          careful pair of hands. Include enough context for a real reply — I
+          read every serious message.
         </p>
       </header>
 
@@ -186,7 +186,7 @@ export default function ContactPage() {
                       {social.label}
                     </span>
                     <ArrowUpRight
-                      className="size-3 text-white/20 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/50"
+                      className="size-3 text-white/20 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white/50"
                       aria-hidden="true"
                     />
                   </a>

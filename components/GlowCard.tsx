@@ -25,10 +25,7 @@ export function GlowCard({ children, className, style }: GlowCardProps) {
 
   return (
     <div
-      className={cn(
-        "spotlight-card surface-panel rounded-2xl",
-        className
-      )}
+      className={cn("spotlight-card surface-panel rounded-2xl", className)}
       style={style}
       onPointerMove={handlePointerMove}
     >

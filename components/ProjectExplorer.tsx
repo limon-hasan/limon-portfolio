@@ -6,6 +6,7 @@ import { useMemo, useState } from "react"
 import { ProjectCard } from "@/components/ProjectCard"
 import {
   categoryMeta,
+  getCategoryOrderRange,
   getProjectsByCategory,
   projectCategories,
   projectCountByCategory,
@@ -17,14 +18,14 @@ const groupMeta = [
   {
     id: "web" as const,
     label: "Web & Full-Stack Systems",
-    range: "01 — 06",
+    range: getCategoryOrderRange("web"),
     description:
-      "Product engineering across booking, travel, market data, media, fitness, and developer tooling.",
+      "Product engineering across repair marketplaces, recruitment, booking, travel, market data, media, fitness, and developer tooling.",
   },
   {
     id: "ai" as const,
     label: "AI & Machine Learning",
-    range: "07 — 08",
+    range: getCategoryOrderRange("ai"),
     description:
       "Applied research in low-resource NLP and personalized federated learning for satellite vision.",
   },
@@ -60,6 +61,12 @@ export function ProjectExplorer() {
                 : category.id === "web"
                   ? projectCountByCategory.web
                   : projectCountByCategory.ai
+            const shortLabel =
+              category.id === "all"
+                ? "All"
+                : category.id === "web"
+                  ? "Web"
+                  : "AI / ML"
 
             return (
               <button
@@ -72,9 +79,7 @@ export function ProjectExplorer() {
                 onClick={() => setActive(category.id)}
                 className={cn(
                   "relative inline-flex h-9 shrink-0 items-center gap-2 rounded-full px-3.5 text-[12.5px] font-medium whitespace-nowrap transition-colors",
-                  isActive
-                    ? "text-white"
-                    : "text-white/40 hover:text-white/75"
+                  isActive ? "text-white" : "text-white/40 hover:text-white/75"
                 )}
               >
                 {isActive ? (
@@ -88,7 +93,10 @@ export function ProjectExplorer() {
                     }
                   />
                 ) : null}
-                <span className="relative z-10">{category.label}</span>
+                <span className="relative z-10 sm:hidden">{shortLabel}</span>
+                <span className="relative z-10 hidden sm:inline">
+                  {category.label}
+                </span>
                 <span
                   className={cn(
                     "relative z-10 rounded-full px-1.5 py-0.5 font-mono text-[9px]",
@@ -112,8 +120,8 @@ export function ProjectExplorer() {
       </div>
 
       <p className="mt-4 max-w-2xl text-[12.5px] leading-5 text-white/35">
-        {categoryMeta[active].description} Order is intentional: category
-        first, then descending project sequence.
+        {categoryMeta[active].description} Order is intentional: category first,
+        then descending project sequence.
       </p>
 
       <div
@@ -172,7 +180,10 @@ export function ProjectExplorer() {
                           ease: [0.22, 1, 0.36, 1],
                         }}
                       >
-                        <ProjectCard project={project} />
+                        <ProjectCard
+                          project={project}
+                          priority={group.id === groups[0].id && index < 2}
+                        />
                       </motion.div>
                     ))}
                   </div>

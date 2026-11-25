@@ -64,7 +64,7 @@ export function ActionLink({
       <span>{children}</span>
       {external ? (
         <ArrowUpRight
-          className="size-3.5 opacity-50 transition-transform duration-200 group-hover/action:-translate-y-0.5 group-hover/action:translate-x-0.5 group-hover/action:opacity-90"
+          className="size-3.5 opacity-50 transition-transform duration-200 group-hover/action:translate-x-0.5 group-hover/action:-translate-y-0.5 group-hover/action:opacity-90"
           aria-hidden="true"
         />
       ) : null}

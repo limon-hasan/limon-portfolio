@@ -8,11 +8,13 @@ import {
   Sparkles,
 } from "lucide-react"
 
+import { ProjectThumbnail } from "@/components/ProjectThumbnail"
 import type { Project } from "@/types/portfolio"
 
 interface ProjectVisualProps {
   project: Project
   className?: string
+  priority?: boolean
 }
 
 const shellStyle = (accent: string) =>
@@ -43,7 +45,10 @@ function BrowserFrame({
           <span className="size-1.5 rounded-full bg-white/8" />
         </div>
         <div className="ml-1 flex min-w-0 flex-1 items-center gap-1.5 rounded-md border border-white/6 bg-white/[0.025] px-2 py-1">
-          <Globe2 className="size-2.5 shrink-0 text-white/25" aria-hidden="true" />
+          <Globe2
+            className="size-2.5 shrink-0 text-white/25"
+            aria-hidden="true"
+          />
           <span className="truncate font-mono text-[8px] text-white/30">
             {address}
           </span>
@@ -93,8 +98,16 @@ function StudioSpaceVisual() {
 
       <div className="mt-2.5 grid grid-cols-2 gap-2">
         {[
-          { name: "The Light Room", price: "৳ 1,800 / hr", tone: "from-[#5b4df5]/40" },
-          { name: "North Loft", price: "৳ 2,400 / hr", tone: "from-[#22d3ee]/30" },
+          {
+            name: "The Light Room",
+            price: "৳ 1,800 / hr",
+            tone: "from-[#5b4df5]/40",
+          },
+          {
+            name: "North Loft",
+            price: "৳ 2,400 / hr",
+            tone: "from-[#22d3ee]/30",
+          },
         ].map((studio) => (
           <div
             key={studio.name}
@@ -324,7 +337,9 @@ function FitLogVisual() {
           <div className="mt-0.5 text-[15px] leading-none font-semibold tracking-tight text-white/90">
             04 / 06
           </div>
-          <div className="mt-0.5 text-[7px] text-white/30">exercises complete</div>
+          <div className="mt-0.5 text-[7px] text-white/30">
+            exercises complete
+          </div>
         </div>
         <div
           className="flex size-11 items-center justify-center rounded-full"
@@ -537,13 +552,18 @@ function FederatedVisual() {
       </div>
 
       <div className="relative mt-2 h-[92px] overflow-hidden rounded-lg border border-white/8 bg-[linear-gradient(160deg,#131a2c,#0b0e18_60%,#0a0a0d)]">
-        <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(90deg,transparent_49%,rgba(255,255,255,0.15)_50%,transparent_51%),linear-gradient(0deg,transparent_49%,rgba(255,255,255,0.15)_50%,transparent_51%)] [background-size:22px_22px]" />
+        <div className="absolute inset-0 [background-image:linear-gradient(90deg,transparent_49%,rgba(255,255,255,0.15)_50%,transparent_51%),linear-gradient(0deg,transparent_49%,rgba(255,255,255,0.15)_50%,transparent_51%)] [background-size:22px_22px] opacity-20" />
         <svg
           viewBox="0 0 220 92"
           className="absolute inset-0 h-full w-full"
           aria-hidden="true"
         >
-          <g stroke="#a78bfa" strokeOpacity="0.35" strokeWidth="0.6" strokeDasharray="3 3">
+          <g
+            stroke="#a78bfa"
+            strokeOpacity="0.35"
+            strokeWidth="0.6"
+            strokeDasharray="3 3"
+          >
             <line x1="110" y1="46" x2="35" y2="22" />
             <line x1="110" y1="46" x2="185" y2="20" />
             <line x1="110" y1="46" x2="38" y2="72" />
@@ -599,16 +619,88 @@ function FederatedVisual() {
   )
 }
 
-export function ProjectVisual({ project, className }: ProjectVisualProps) {
+/**
+ * Designed fallback used whenever a project has no screenshot (or the asset
+ * fails to load). Built from catalog data so new projects always have a
+ * presentable preview without bespoke artwork.
+ */
+function GenericProjectVisual({ project }: { project: Project }) {
+  const liveHref = project.links.find((link) => link.kind === "live")?.href
+  const address =
+    liveHref?.replace(/^https?:\/\//, "").replace(/\/$/, "") ??
+    `${project.slug}.app`
+
+  return (
+    <BrowserFrame address={address} accent={project.accent}>
+      <div className="flex h-full flex-col">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="font-mono text-[7px] tracking-[0.16em] text-white/30 uppercase">
+              {project.category === "AI & Machine Learning"
+                ? "AI / ML"
+                : "Web / Full-stack"}
+            </div>
+            <div className="mt-1 truncate text-[15px] leading-none font-semibold tracking-tight text-white/90">
+              {project.title}
+            </div>
+            <div className="mt-1 font-mono text-[7px] text-white/30">
+              {project.year} · {project.status}
+            </div>
+          </div>
+          <span
+            className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-white/10"
+            style={{ color: project.accent }}
+          >
+            <Sparkles className="size-3.5" aria-hidden="true" />
+          </span>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-1.5">
+          {project.metrics.slice(0, 4).map((metric) => (
+            <div
+              key={metric.label}
+              className="rounded border border-white/6 bg-white/[0.02] px-1.5 py-1"
+            >
+              <div className="font-mono text-[6px] tracking-wider text-white/22 uppercase">
+                {metric.label}
+              </div>
+              <div className="mt-0.5 truncate text-[8px] text-white/60">
+                {metric.value}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-auto flex flex-wrap gap-1 pt-2">
+          {project.tech.slice(0, 4).map((tech) => (
+            <span
+              key={tech}
+              className="rounded border border-white/6 px-1 py-0.5 font-mono text-[6px] text-white/30"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+      </div>
+    </BrowserFrame>
+  )
+}
+
+export function ProjectVisual({
+  project,
+  className,
+  priority = false,
+}: ProjectVisualProps) {
   let visual: ReactNode
 
   if (project.image) {
     visual = (
-      <div className="relative w-full h-full min-h-[220px] overflow-hidden rounded-xl border border-white/10 bg-black/40 group">
-        <img
+      <div className="group relative h-full min-h-[220px] w-full overflow-hidden rounded-xl border border-white/10 bg-black/40">
+        <ProjectThumbnail
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+          priority={priority}
+          fallback={<GenericProjectVisual project={project} />}
         />
       </div>
     )
@@ -635,8 +727,11 @@ export function ProjectVisual({ project, className }: ProjectVisualProps) {
       case "bengali-fake-news-detection":
         visual = <BengaliNlpVisual />
         break
-      default:
+      case "federated-learning-satellite":
         visual = <FederatedVisual />
+        break
+      default:
+        visual = <GenericProjectVisual project={project} />
         break
     }
   }

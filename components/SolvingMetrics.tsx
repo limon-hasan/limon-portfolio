@@ -76,7 +76,7 @@ export function SolvingMetrics() {
                 {platform.platform}
               </span>
               <ArrowUpRight
-                className="size-3 text-white/25 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white/60"
+                className="size-3 text-white/25 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white/60"
                 aria-hidden="true"
               />
             </div>

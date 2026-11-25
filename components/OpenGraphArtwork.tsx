@@ -1,3 +1,5 @@
+import { formatProjectOrder, projectCountByCategory } from "@/data/projects"
+
 export function OpenGraphArtwork() {
   return (
     <div
@@ -121,7 +123,9 @@ export function OpenGraphArtwork() {
         }}
       >
         <div style={{ display: "flex", gap: "22px" }}>
-          <span>08 systems</span>
+          <span>
+            {formatProjectOrder(projectCountByCategory.total)} systems
+          </span>
           <span>B.Sc. in CSE</span>
           <span>Dhaka, Bangladesh</span>
         </div>

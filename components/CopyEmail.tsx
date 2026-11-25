@@ -32,7 +32,10 @@ export function CopyEmail({ email }: { email: string }) {
       aria-label={`Copy ${email} to clipboard`}
     >
       {copied ? (
-        <Check className="size-3 text-emerald-600 dark:text-emerald-300" aria-hidden="true" />
+        <Check
+          className="size-3 text-emerald-600 dark:text-emerald-300"
+          aria-hidden="true"
+        />
       ) : (
         <Copy className="size-3" aria-hidden="true" />
       )}

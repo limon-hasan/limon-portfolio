@@ -4,11 +4,12 @@ import Link from "next/link"
 
 import { ProjectExplorer } from "@/components/ProjectExplorer"
 import { projectCountByCategory } from "@/data/projects"
+import { numberToWord } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "Projects",
   description:
-    "Eight systems across web and full-stack engineering and machine learning research: StudioSpace, Wanderlust, Bazar-Dor, Bangla News 24, FitLog, DevStack, Bengali fake news detection, and personalized federated learning.",
+    "Ten systems across web and full-stack engineering and machine learning research: FixMate, HireLoop, StudioSpace, Wanderlust, Bazar-Dor, Bangla News 24, FitLog, DevStack, Bengali fake news detection, and personalized federated learning.",
   alternates: {
     canonical: "/projects",
   },
@@ -35,7 +36,10 @@ const readingGuide = [
 export default function ProjectsPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-5 pt-12 pb-4 sm:px-8 sm:pt-16">
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono text-[10px] tracking-wider text-white/28 uppercase">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-2 font-mono text-[10px] tracking-wider text-white/28 uppercase"
+      >
         <Link href="/" className="transition-colors hover:text-white/60">
           Home
         </Link>
@@ -53,9 +57,12 @@ export default function ProjectsPage() {
             Systems, in strict sequence.
           </h1>
           <p className="pretty mt-4 max-w-xl text-[14px] leading-6 text-white/42">
-            Six web and full-stack products, then two research systems. No
-            shuffled grid, no vague categories: the catalog follows a deliberate
-            order, and every card opens a full engineering case study.
+            {numberToWord(projectCountByCategory.web)} web and full-stack
+            products, then{" "}
+            {numberToWord(projectCountByCategory.ai).toLowerCase()} research
+            systems. No shuffled grid, no vague categories: the catalog follows
+            a deliberate order, and every card opens a full engineering case
+            study.
           </p>
         </div>
 
@@ -91,8 +98,14 @@ export default function ProjectsPage() {
         {readingGuide.map((item) => {
           const Icon = item.icon
           return (
-            <div key={item.title} className="flex items-start gap-2.5 px-1 py-1">
-              <Icon className="mt-0.5 size-3.5 shrink-0 text-white/30" aria-hidden="true" />
+            <div
+              key={item.title}
+              className="flex items-start gap-2.5 px-1 py-1"
+            >
+              <Icon
+                className="mt-0.5 size-3.5 shrink-0 text-white/30"
+                aria-hidden="true"
+              />
               <div>
                 <div className="font-mono text-[9px] tracking-[0.12em] text-white/45 uppercase">
                   {item.title}

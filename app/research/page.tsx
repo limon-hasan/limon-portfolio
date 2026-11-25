@@ -90,13 +90,15 @@ const datasets = [
     name: "Airbus Ship Detection",
     domain: "Open-ocean segmentation",
     role: "Wide-area scenes with sparse targets and strong imbalance.",
-    challenge: "Tiny ships against water, mask-to-box conversion, empty regions.",
+    challenge:
+      "Tiny ships against water, mask-to-box conversion, empty regions.",
   },
   {
     name: "DOTA",
     domain: "Aerial scene detection",
     role: "Multi-class remote-sensing context beyond ship-only imagery.",
-    challenge: "Very large images, oriented objects, domain shift across scenes.",
+    challenge:
+      "Very large images, oriented objects, domain shift across scenes.",
   },
 ]
 
@@ -154,8 +156,8 @@ export default function ResearchPage() {
           <p className="pretty mt-4 max-w-2xl text-[14.5px] leading-7 text-white/45">
             Personalized federated learning for satellite ship detection across
             non-IID clients. Four benchmarks, YOLOv8 locally, Flower at the
-            coordination layer, and an evaluation that refuses to hide per-client
-            failure behind a global average.
+            coordination layer, and an evaluation that refuses to hide
+            per-client failure behind a global average.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-2.5">
@@ -272,8 +274,8 @@ export default function ResearchPage() {
             </div>
             <blockquote className="pretty mt-4 border-l-2 border-[#a78bfa]/60 pl-4 text-[17px] leading-8 text-white/65 sm:text-lg">
               How can personalized federated learning preserve per-client ship
-              detection quality when satellite imagery is non-IID and clients are
-              operationally heterogeneous?
+              detection quality when satellite imagery is non-IID and clients
+              are operationally heterogeneous?
             </blockquote>
             <p className="pretty mt-4 text-[13px] leading-6 text-white/40">
               The thesis treats federation as a distribution problem first and a
@@ -457,8 +459,8 @@ export default function ResearchPage() {
             </div>
             <p className="mt-3 text-[10px] leading-4 text-white/24">
               Benchmark values and ablation tables live in the thesis document.
-              This dossier describes the system and evaluation design rather than
-              publishing unverified headline numbers.
+              This dossier describes the system and evaluation design rather
+              than publishing unverified headline numbers.
             </p>
           </section>
 

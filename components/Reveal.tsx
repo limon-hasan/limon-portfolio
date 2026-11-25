@@ -28,9 +28,7 @@ export function Reveal({
       ref={ref}
       className={cn(className)}
       initial={
-        shouldReduceMotion
-          ? false
-          : { opacity: 0, y, filter: "blur(6px)" }
+        shouldReduceMotion ? false : { opacity: 0, y, filter: "blur(6px)" }
       }
       whileInView={
         shouldReduceMotion

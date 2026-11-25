@@ -2,12 +2,12 @@
 
 A production-shaped developer portfolio for **Maksudul Hasan Limon**, an undergraduate CSE student and full-stack developer. Built with the Next.js App Router, TypeScript, Tailwind CSS, Framer Motion, and Lucide.
 
-The site pairs a dark, Linear/Vercel-inspired interface with detailed case studies for eight systems across web engineering and applied machine learning.
+The site pairs a dark, Linear/Vercel-inspired interface with detailed case studies for ten systems across web engineering and applied machine learning.
 
 ## Highlights
 
 - **Bento home** — hero, flagship StudioSpace card, competitive-programming metrics, AI/ML spotlight, and an interactive tech dock.
-- **Strictly ordered project catalog** — six web/full-stack systems followed by two AI/ML systems, split into category tabs on `/projects`.
+- **Strictly ordered project catalog** — eight web/full-stack systems followed by two AI/ML systems, split into category tabs on `/projects`.
 - **Dynamic case studies** — architecture, constraints, implementation notes, and outcomes for every project at `/projects/[slug]`.
 - **Research dossier** — methodology and evaluation notes for federated learning for satellite vision and Bengali fake-news detection.
 - **Command palette** — press `Cmd/Ctrl + K` or `/` to navigate, search projects, open profiles, or download the résumé.
@@ -100,5 +100,6 @@ The site deploys cleanly to Vercel. Set `NEXT_PUBLIC_SITE_URL` and the Resend va
 
 ## Content notes
 
-- Project previews are generated with CSS and SVG rather than screenshots, keeping the repository light and the visuals consistent.
+- Project cards use screenshots from `public/projects` where available, with CSS/SVG-generated mockups as fallbacks for projects without an image.
 - Research pages describe methodology and evaluation design rather than inventing benchmark results.
+- `public/Limon_SWE_Resume.pdf` is the downloadable resume, wired through `profile.resumePath` in `lib/site.ts`. Replace the PDF (and update the path if the filename changes) when the resume is revised.

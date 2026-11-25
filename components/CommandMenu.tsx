@@ -53,7 +53,10 @@ const LinkedinIcon = (props: SVGProps<SVGSVGElement>) => (
   <BrandIcon {...props} name="linkedin" />
 )
 
-const itemIcons: Record<CommandItem["icon"], ComponentType<SVGProps<SVGSVGElement>>> = {
+const itemIcons: Record<
+  CommandItem["icon"],
+  ComponentType<SVGProps<SVGSVGElement>>
+> = {
   home: House,
   projects: Layers,
   research: FlaskConical,
@@ -349,9 +352,7 @@ function CommandMenuDialog({
             aria-label="Command menu"
             className="relative w-full max-w-[640px] overflow-hidden rounded-2xl border border-white/12 bg-[#0c0c10]/96 shadow-[0_40px_120px_-20px_rgba(0,0,0,0.85),0_0_0_1px_rgba(139,124,255,0.08)] backdrop-blur-2xl"
             initial={
-              shouldReduceMotion
-                ? false
-                : { opacity: 0, y: -12, scale: 0.985 }
+              shouldReduceMotion ? false : { opacity: 0, y: -12, scale: 0.985 }
             }
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={
@@ -408,10 +409,7 @@ function CommandMenuDialog({
             >
               {filteredGroups.length === 0 ? (
                 <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
-                  <Search
-                    className="size-5 text-white/20"
-                    aria-hidden="true"
-                  />
+                  <Search className="size-5 text-white/20" aria-hidden="true" />
                   <p className="text-sm text-white/55">
                     No matches for “{query}”
                   </p>

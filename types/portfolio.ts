@@ -1,14 +1,10 @@
-export type ProjectCategory = "Web & Full-Stack Systems" | "AI & Machine Learning"
+export type ProjectCategory =
+  "Web & Full-Stack Systems" | "AI & Machine Learning"
 
 export type ProjectCategoryFilter = "all" | "web" | "ai"
 
 export type ProjectLinkKind =
-  | "live"
-  | "frontend"
-  | "backend"
-  | "github"
-  | "paper"
-  | "dataset"
+  "live" | "frontend" | "backend" | "github" | "paper" | "dataset"
 
 export interface ProjectLink {
   kind: ProjectLinkKind
@@ -23,12 +19,7 @@ export interface ProjectMetric {
 }
 
 export type ArchitectureLayerId =
-  | "client"
-  | "gateway"
-  | "service"
-  | "data"
-  | "intelligence"
-  | "external"
+  "client" | "gateway" | "service" | "data" | "intelligence" | "external"
 
 export interface ArchitectureNode {
   id: string

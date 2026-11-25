@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils"
 export function TechDock() {
   const [activeName, setActiveName] = useState(techDock[0]?.name ?? "")
   const shouldReduceMotion = useReducedMotion()
-  const active = techDock.find((skill) => skill.name === activeName) ?? techDock[0]
+  const active =
+    techDock.find((skill) => skill.name === activeName) ?? techDock[0]
 
   return (
     <div className="flex h-full flex-col">

@@ -18,12 +18,48 @@ const layers: {
   icon: LucideIcon
   accent: string
 }[] = [
-  { id: "client", label: "Client surface", short: "CLIENT", icon: Globe, accent: "#4fd1c5" },
-  { id: "gateway", label: "Edge & routing", short: "EDGE", icon: Network, accent: "#8b7cff" },
-  { id: "service", label: "Service layer", short: "SERVICE", icon: Server, accent: "#60a5fa" },
-  { id: "data", label: "Data layer", short: "DATA", icon: Database, accent: "#f6c177" },
-  { id: "intelligence", label: "Model layer", short: "MODEL", icon: Cpu, accent: "#a78bfa" },
-  { id: "external", label: "External", short: "EXT", icon: Boxes, accent: "#f97362" },
+  {
+    id: "client",
+    label: "Client surface",
+    short: "CLIENT",
+    icon: Globe,
+    accent: "#4fd1c5",
+  },
+  {
+    id: "gateway",
+    label: "Edge & routing",
+    short: "EDGE",
+    icon: Network,
+    accent: "#8b7cff",
+  },
+  {
+    id: "service",
+    label: "Service layer",
+    short: "SERVICE",
+    icon: Server,
+    accent: "#60a5fa",
+  },
+  {
+    id: "data",
+    label: "Data layer",
+    short: "DATA",
+    icon: Database,
+    accent: "#f6c177",
+  },
+  {
+    id: "intelligence",
+    label: "Model layer",
+    short: "MODEL",
+    icon: Cpu,
+    accent: "#a78bfa",
+  },
+  {
+    id: "external",
+    label: "External",
+    short: "EXT",
+    icon: Boxes,
+    accent: "#f97362",
+  },
 ]
 
 export function ArchitectureDiagram({
