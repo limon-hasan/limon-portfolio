@@ -22,7 +22,7 @@ npm run build       # the only check that exercises SSG for every route
 
 Run them in that order. There is no test runner; don't add one unless asked.
 
-Build gotcha: `next build` may exit 1 with `SecurityFatalError` ("affected by a known security vulnerability") *after* all pages generate. Rerun the exact same command; it completes (and prints the advisory as a warning). Only compile/type errors are real failures.
+Build gotcha: `next build` may exit 1 with `SecurityFatalError` ("affected by a known security vulnerability") *after* all pages generate — it did on 16.4.4 before the 16.4.6 upgrade. Rerun the same command; it completes (and prints the advisory as a warning). Only compile/type errors are real failures.
 
 `npm run format` rewrites every `*.ts`/`*.tsx` in the repo (not md/json/css). The committed tree is not fully Prettier-formatted, so a repo-wide run creates large unrelated diffs — prefer `npx prettier --write <paths>` for the files you touched. Config: no semicolons, double quotes, LF, width 80, Tailwind class sorting against `app/globals.css`.
 
@@ -38,7 +38,7 @@ Build gotcha: `next build` may exit 1 with `SecurityFatalError` ("affected by a 
 
 - Dark-first design. Light mode is not authored per component: `app/globals.css` remaps white-alpha utilities whenever `.dark` is absent. Any intentionally dark surface (browser mock frames, terminal wells, badges) must keep `dark-fixed`, or it inverts in light mode.
 - Colors are mostly hardcoded hex (`#08080a`, `#0c0c10`, accent `#8b7cff`) — copy nearby components rather than inventing tokens.
-- shadcn is configured as `base-nova` on `@base-ui/react`, not Radix. `cn` and `cva` come from the `cn` / `class-variance-authority` packages, re-exported through `lib/utils.ts`. `hooks/` is empty.
+- shadcn is configured as `base-nova` on `@base-ui/react`, not Radix, and `shadcn` itself is a dev-only CLI. `cn` and `cva` come from the `cn` / `class-variance-authority` packages, re-exported through `lib/utils.ts`. `hooks/` is empty.
 - Path alias `@/*` maps to the repo root.
 
 ## Contact form
