@@ -94,7 +94,6 @@ export default function AboutPage() {
               href={profile.resumePath}
               variant="ghost"
               size="md"
-              download={profile.resumeFileName}
               newTab
             >
               Resume

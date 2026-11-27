@@ -68,7 +68,7 @@ export const commandItems: CommandItem[] = [
     group: "Actions",
     href: profile.resumePath,
     keywords: ["resume", "cv", "pdf", "download"],
-    download: true,
+    external: true,
     icon: "download",
   },
 ]

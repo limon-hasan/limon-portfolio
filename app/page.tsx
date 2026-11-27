@@ -205,7 +205,7 @@ export default function HomePage() {
                 </ActionLink>
                 <ActionLink
                   href={profile.resumePath}
-                  download
+                  newTab
                   variant="secondary"
                   size="lg"
                   icon={<Download className="size-4" aria-hidden="true" />}

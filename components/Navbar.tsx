@@ -116,7 +116,6 @@ export function Navbar() {
             href={profile.resumePath}
             target="_blank"
             rel="noopener noreferrer"
-            download={profile.resumeFileName}
             className="hidden h-9 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-3 text-xs font-medium text-white/60 transition-colors hover:border-[#8b7cff]/35 hover:bg-[#5b4df5]/10 hover:text-white sm:inline-flex"
           >
             <Download className="size-3.5" aria-hidden="true" />
@@ -179,7 +178,6 @@ export function Navbar() {
                   href={profile.resumePath}
                   target="_blank"
                   rel="noopener noreferrer"
-                  download={profile.resumeFileName}
                   className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-950 text-xs font-medium text-zinc-50 dark:bg-white dark:text-[#08080a]"
                 >
                   <Download className="size-3.5" aria-hidden="true" />

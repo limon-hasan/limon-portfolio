@@ -63,7 +63,6 @@ export function Hero() {
           <div className="mt-8 flex flex-wrap items-center gap-2.5">
             <ActionLink
               href={profile.resumePath}
-              download={profile.resumeFileName}
               newTab
               variant="primary"
               size="lg"
