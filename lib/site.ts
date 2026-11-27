@@ -36,7 +36,7 @@ export const profile = {
   github: "https://github.com/limon-hasan",
   githubHandle: "@limon-hasan",
   resumePath:
-    "https://drive.google.com/file/d/1q83XomNp-MeF13jwnVs083PJOQj2PIxX/view",
+    "https://drive.google.com/file/d/1q83XomNp-MeF13jwnVs083PJOQj2PIxX/view?usp=sharing",
   resumeFileName: "Maksudul_Hasan_Limon_Resume.pdf",
   url: siteUrl,
 } as const
